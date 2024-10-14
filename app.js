@@ -3,7 +3,6 @@ const app = express()
 const getTopics = require("./controllers/topics-controllers")
 const endpoints = require("./endpoints.json")
 
-
 app.get("/api/topics", getTopics)
 
 app.get("/api", (request, response) => {
