@@ -24,6 +24,7 @@ describe("/api/topics", () => {
         .expect(200)
         .then((response) => {
             const topics = response.body.rows
+            expect(topics.length).toBe(3)
             topics.forEach((topic) => {
                 expect(topic).toEqual(
                     expect.objectContaining({
@@ -38,6 +39,7 @@ describe("/api/topics", () => {
 
 describe("/api", () => {
     test("GET: 200 - responds with an object containing all available endpoints", () => {
+
         return request(app)
         .get("/api")
         .expect(200)
