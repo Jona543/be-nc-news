@@ -6,6 +6,7 @@ const data = require("../db/data/test-data/index")
 
 const db = require("../db/connection")
 const endpoints = require("../endpoints.json")
+const toBeSorted = require("jest-sorted")
 
 
 
@@ -62,6 +63,40 @@ describe("/api/articles/:article_id", () => {
             expect(response.body.article[0].created_at).toBe('2020-07-09T20:11:00.000Z')
             expect(response.body.article[0].votes).toBe(100)
             expect(response.body.article[0].article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+        })
+    })
+})
+
+describe("/api/articles", () => {
+    test("GET: 200 - responds with an array of articles with correct properties present", () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((response) => {
+            const articles = response.body
+            expect(articles.length).toBe(13)
+            articles.forEach((article) => {
+                expect(article).toEqual(
+                    expect.objectContaining({
+                        author: expect.any(String),
+                        title: expect.any(String),
+                        article_id: expect.any(Number),
+                        topic: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(String)
+                    })
+                )
+            })
+        })
+    })
+    test("GET: 200 - responds with array of articles sorted by date in descending order", () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({body}) => {
+            expect(body).toBeSortedBy("created_at", {descending: true})
         })
     })
 })
