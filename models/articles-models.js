@@ -29,7 +29,6 @@ const fetchCommentsByArticle = (article_id) => {
         WHERE comments.article_id = $1
         ORDER BY created_at`, [article_id])
     .then(({ rows }) => {
-        console.log(rows)
         return rows
     })
 }
