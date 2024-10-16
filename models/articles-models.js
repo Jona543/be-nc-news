@@ -39,5 +39,14 @@ const insertComment = (article_id, username, body) => {
         return rows[0]
     })
 }
+const editVotesByArticle = (article_id, body) => {
 
-module.exports = { fetchArticleById, fetchArticle, fetchCommentsByArticle, insertComment }
+    return fetchArticleById(article_id).then(() => {
+        return db.query('UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *', [body.inc_votes, article_id])
+        .then(({rows}) => {
+            return rows[0]
+        })
+    })
+}
+
+module.exports = { fetchArticleById, fetchArticle, fetchCommentsByArticle, insertComment, editVotesByArticle }

@@ -217,3 +217,51 @@ describe("/api/articles/:article_id/comments", () => {
         })
     })
 })
+
+describe.only("/api/articles/:article_id", () => {
+    test("PATCH: 200 - should respond with an updated article with changed number of votes", () => {
+        return request(app)
+        .patch("/api/articles/1")
+        .send({inc_votes: 10})
+        .expect(200)
+        .then(({body}) => {
+            expect(body.votes).toBe(110)
+        })
+    })
+    test("PATCH: 400 - should respond with an error when passed a body that does not contain the correct fields", () => {
+        return request(app)
+        .patch("/api/articles/1")
+        .send({})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe("Missing Information")
+        })
+    })
+    test("PATCH: 404 - should respond with an error when passed an article id that doesn't exist", () => {
+        return request(app)
+        .patch("/api/articles/9999")
+        .send({inc_votes: 10})
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe("Article Not Found")
+        })
+    })
+    test("PATCH: 400 - should respond with an error when passed an article that isn't valid", () => {
+        return request(app)
+        .patch("/api/articles/article_id")
+        .send({inc_votes: 10})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe("Invalid Id Type")
+        })
+    })
+    test("PATCH: 400 - should respond with an error when passed invalid data type for a correct key", () => {
+        return request(app)
+        .patch("/api/articles/article_id")
+        .send({inc_votes: 'cat'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Invalid Id Type')
+        })
+    })
+})
