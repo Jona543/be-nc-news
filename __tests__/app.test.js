@@ -148,3 +148,48 @@ describe("/api/articles/:article_id/comments", () => {
         })
     })
 })
+
+describe("/api/articles/:article_id/comments", () => {
+    test("POST: 201 - responds with newly posted comment", () => {
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send({username: "lurker", body: "This article is sick"})
+        .expect(201)
+        .then(({body}) => {
+            expect(body.comment).toMatchObject({
+                author: "lurker", 
+                body: "This article is sick", 
+                article_id: 1, 
+                votes: 0, 
+                comment_id: expect.any(Number), 
+                created_at: expect.any(String)})
+        })
+    })
+    test("POST: 400 - responds with error message if given invalid article id", () => {
+        return request(app)
+        .post("/api/articles/article_id/comments")
+        .send({username: "lurker", body: "This article is sick"})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe("Invalid Id Type")
+        })
+    })
+    test("POST: 404 - responds with error message if given non existent article id", () => {
+        return request(app)
+        .post("/api/articles/999/comments")
+        .send({username: "lurker", body: "This article is sick"})
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe("Article Not Found")
+        })
+    })
+    test("POST: 400 - responds with error message if given object with missing properties", () => {
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send({username: "lurker"})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe("Missing Information")
+        })
+    })
+})
