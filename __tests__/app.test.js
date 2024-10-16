@@ -116,3 +116,35 @@ describe("/api/articles", () => {
         })
     })
 })
+
+describe("/api/articles/:article_id/comments", () => {
+    test("GET: 200 - responds with array of comments for the given article with correct properties", () => {
+        return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then((response) => {
+            const comments = response.body
+            expect(comments.length).toBe(11)
+            comments.forEach((comment) => {
+                expect(comment).toEqual(
+                    expect.objectContaining({
+                        comment_id: expect.any(Number),
+                        votes: expect.any(Number),
+                        created_at: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        article_id: expect.any(Number)
+                    })
+                )
+            })
+        })
+    })
+    test("GET: 200 - comments array should be in the order in which they were posted with most recent comments first", () => {
+        return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({body}) => {
+            expect(body).toBeSortedBy("created_at")
+        })
+    })
+})

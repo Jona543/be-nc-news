@@ -22,4 +22,16 @@ const fetchArticle = () => {
         })
 }
 
-module.exports = { fetchArticleById, fetchArticle }
+const fetchCommentsByArticle = (article_id) => {
+    return db.query(`SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id FROM comments
+        JOIN articles
+        ON comments.article_id = articles.article_id
+        WHERE comments.article_id = $1
+        ORDER BY created_at`, [article_id])
+    .then(({ rows }) => {
+        console.log(rows)
+        return rows
+    })
+}
+
+module.exports = { fetchArticleById, fetchArticle, fetchCommentsByArticle }
