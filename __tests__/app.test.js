@@ -147,6 +147,30 @@ describe("/api/articles/:article_id/comments", () => {
             expect(body).toBeSortedBy("created_at")
         })
     })
+    test("GET: 200 - responds with empty array when passed an article that exists but has no comments", () => {
+        return request(app)
+        .get("/api/articles/4/comments")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.length).toBe(0)
+        })
+    })
+    test("GET: 400 - responds with error message when given an invalid article_id", () => {
+        return request(app)
+        .get("/api/articles/article_id/comments")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe("Invalid Id Type")
+        })
+    })
+    test("GET: 404 - responds with error message when given valid article_id that doesn't exist", () => {
+        return request(app)
+        .get("/api/articles/999/comments")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe("Article Not Found")
+        })
+    })
 })
 
 describe("/api/articles/:article_id/comments", () => {
