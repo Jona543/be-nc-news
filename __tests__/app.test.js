@@ -218,7 +218,7 @@ describe("/api/articles/:article_id/comments", () => {
     })
 })
 
-describe.only("/api/articles/:article_id", () => {
+describe("/api/articles/:article_id", () => {
     test("PATCH: 200 - should respond with an updated article with changed number of votes", () => {
         return request(app)
         .patch("/api/articles/1")
