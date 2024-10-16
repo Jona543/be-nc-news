@@ -1,40 +1,60 @@
-const { fetchArticleById, fetchArticle, fetchCommentsByArticle, insertComment } = require("../models/articles-models")
+const {
+  fetchArticleById,
+  fetchArticle,
+  fetchCommentsByArticle,
+  insertComment,
+} = require("../models/articles-models");
 
 const getArticleById = (request, response, next) => {
-    const { article_id } = request.params
-    fetchArticleById(article_id).then((article) => {
-        response.status(200).send({ article })
-    }).catch((err) => {
-        next(err)
+  const { article_id } = request.params;
+  fetchArticleById(article_id)
+    .then((article) => {
+      response.status(200).send({ article });
     })
-}
+    .catch((err) => {
+      next(err);
+    });
+};
 
 const getArticle = (request, response, next) => {
-    fetchArticle().then((articles) => {
-        response.status(200).send(articles)
-    }).catch((err) => {
-        next(err)
+  fetchArticle()
+    .then((articles) => {
+      response.status(200).send(articles);
     })
-}
+    .catch((err) => {
+      next(err);
+    });
+};
 
 const getCommentsByArticle = (request, response, next) => {
-    const { article_id } = request.params
-    fetchCommentsByArticle(article_id).then((comments) => {
-        response.status(200).send(comments)
-    }).catch((err) => {
-        next(err)
+  const { article_id } = request.params;
+  fetchArticleById(article_id)
+    .then(() => {
+      return fetchCommentsByArticle(article_id);
     })
-}
+    .then((comments) => {
+      response.status(200).send(comments);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
 const postCommentsByArticle = (request, response, next) => {
-    const {username, body} = request.body
-    const {article_id} = request.params
-    insertComment(article_id, username, body)
+  const { username, body } = request.body;
+  const { article_id } = request.params;
+  insertComment(article_id, username, body)
     .then((comment) => {
-        response.status(201).send({comment: comment})
-    }).catch((err) => {
-        next(err)
+      response.status(201).send({ comment: comment });
     })
-}
+    .catch((err) => {
+      next(err);
+    });
+};
 
-module.exports = { getArticleById, getArticle, getCommentsByArticle, postCommentsByArticle }
+module.exports = {
+  getArticleById,
+  getArticle,
+  getCommentsByArticle,
+  postCommentsByArticle,
+};
