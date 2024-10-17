@@ -18,7 +18,8 @@ const getArticleById = (request, response, next) => {
 };
 
 const getArticle = (request, response, next) => {
-  fetchArticle()
+  const userQuery = request.query
+  fetchArticle(userQuery)
     .then((articles) => {
       response.status(200).send(articles);
     })

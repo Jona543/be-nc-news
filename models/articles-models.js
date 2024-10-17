@@ -10,15 +10,26 @@ const fetchArticleById = (article_id) => {
     })
 }
 
-const fetchArticle = () => {
-    return db.query(`SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles
+const fetchArticle = (userQuery) => {
+    const sort_by = userQuery.sort_by || "created_at"
+    const order = userQuery.order || "desc"
+    const allowedInputs = ['title', 'topic', 'author', 'body', 'created_at', 'votes']
+    if (order !== "desc" && order !== "asc"){
+        return Promise.reject({status:404, message: "Invalid Order Query"})
+    }
+    if (!allowedInputs.includes(sort_by)){
+        return Promise.reject({status: 404, message: "Invalid Input"})
+    }
+
+    let queryString = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id) AS comment_count FROM articles
     LEFT OUTER JOIN comments
     ON articles.article_id = comments.article_id
     GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC`
-    )
-        .then((result) => {
-            return result.rows
+    ORDER BY ${sort_by} ${order}`
+
+    return db.query(queryString)
+        .then(({rows}) => {
+            return rows
         })
 }
 
