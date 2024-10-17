@@ -125,7 +125,7 @@ describe("/api/articles", () => {
     })
     test("GET: 200 - responds with an array of articles sorted by date in ascending order when specified", () => {
         return request(app)
-        .get("/api/articles/?order=asc")
+        .get("/api/articles?order=asc")
         .expect(200)
         .then(({body}) => {
             expect(body).toBeSortedBy("created_at")
@@ -133,18 +133,34 @@ describe("/api/articles", () => {
     })
     test("GET: 404 - responds with an error when passed a sort by query that doesn't exist", () => {
         return request(app)
-        .get("/api/articles/?sort_by=sausage")
+        .get("/api/articles?sort_by=sausage")
         .expect(404)
         .then(({body}) => {
             expect(body.message).toBe('Invalid Input')
         })
     })
-    test("GET: 404 = responds with an error when passed an order query that is invalid", () => {
+    test("GET: 404 - responds with an error when passed an order query that is invalid", () => {
         return request(app)
-        .get("/api/articles/?order=sausage")
+        .get("/api/articles?order=sausage")
         .expect(404)
         .then(({body}) => {
             expect(body.message).toBe('Invalid Order Query')
+        })
+    })
+    test("GET: 200 - responds with an array of articles filtered by the specified topic query", () => {
+        return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then((response) => {
+            const articles = response.body
+            expect(articles.length).toBe(1)
+            articles.forEach((article) => {
+                expect(article).toEqual(
+                    expect.objectContaining({
+                        topic: "cats"
+                    })
+                )
+            })
         })
     })
 })

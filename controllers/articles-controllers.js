@@ -17,7 +17,7 @@ const getArticleById = (request, response, next) => {
     });
 };
 
-const getArticle = (request, response, next) => {
+const getArticles = (request, response, next) => {
   const userQuery = request.query
   fetchArticle(userQuery)
     .then((articles) => {
@@ -68,7 +68,7 @@ const patchVotesByArticle = (request, response, next) => {
 
 module.exports = {
   getArticleById,
-  getArticle,
+  getArticles,
   getCommentsByArticle,
   postCommentsByArticle,
   patchVotesByArticle
