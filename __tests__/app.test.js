@@ -265,3 +265,16 @@ describe("/api/articles/:article_id", () => {
         })
     })
 })
+
+describe("/api/comments/:comment_id", () => {
+    test("DELETE: 204 - responds with correct status code", () => {
+        return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(() => {
+            return request(app)
+            .get("/api/comments/1")
+            .expect(404)
+        })
+    })
+})
