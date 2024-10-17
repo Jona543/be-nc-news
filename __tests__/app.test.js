@@ -81,6 +81,14 @@ describe("/api/articles/:article_id", () => {
             expect(body.message).toBe("Article Not Found")
         })
     })
+    test("GET: 200 - responds with article object including comment count", () => {
+        return request(app)
+        .get("/api/articles/9")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.article.comment_count).toBe('2')
+        })
+    })
 })
 
 describe("/api/articles", () => {
@@ -163,6 +171,7 @@ describe("/api/articles", () => {
             })
         })
     })
+
 })
 
 describe("/api/articles/:article_id/comments", () => {
