@@ -107,12 +107,44 @@ describe("/api/articles", () => {
             })
         })
     })
-    test("GET: 200 - responds with array of articles sorted by date in descending order", () => {
+    test("GET: 200 - responds with array of articles sorted by date in descending order by default", () => {
         return request(app)
         .get("/api/articles")
         .expect(200)
         .then(({body}) => {
             expect(body).toBeSortedBy("created_at", {descending: true})
+        })
+    })
+    test("GET: 200 - responds with array of articles sorted by any valid column", () => {
+        return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({body}) => {
+            expect(body).toBeSortedBy("author", {descending: true})
+        })
+    })
+    test("GET: 200 - responds with an array of articles sorted by date in ascending order when specified", () => {
+        return request(app)
+        .get("/api/articles/?order=asc")
+        .expect(200)
+        .then(({body}) => {
+            expect(body).toBeSortedBy("created_at")
+        })
+    })
+    test("GET: 404 - responds with an error when passed a sort by query that doesn't exist", () => {
+        return request(app)
+        .get("/api/articles/?sort_by=sausage")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Invalid Input')
+        })
+    })
+    test("GET: 404 = responds with an error when passed an order query that is invalid", () => {
+        return request(app)
+        .get("/api/articles/?order=sausage")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Invalid Order Query')
         })
     })
 })
@@ -299,3 +331,4 @@ describe("/api/users", () => {
         })
     })
 })
+
