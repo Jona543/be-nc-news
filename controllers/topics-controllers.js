@@ -1,4 +1,4 @@
-const fetchTopics = require("../models/topics-models")
+const { fetchTopics } = require("../models/topics-models")
 
 const getTopics = (request, response, next) => {
     fetchTopics().then((data) => {
@@ -8,4 +8,4 @@ const getTopics = (request, response, next) => {
     })
 }
 
-module.exports = getTopics
+module.exports = { getTopics }

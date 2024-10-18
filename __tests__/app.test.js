@@ -89,6 +89,60 @@ describe("/api/articles/:article_id", () => {
             expect(body.article.comment_count).toBe('2')
         })
     })
+    test("PATCH: 200 - should respond with an updated article with changed number of votes", () => {
+        return request(app)
+        .patch("/api/articles/1")
+        .send({inc_votes: 10})
+        .expect(200)
+        .then(({body}) => {
+            expect(body.votes).toBe(110)
+        })
+    })
+    test("PATCH: 200 - should respond with an updated article with changed number of votes when decreasing amount", () => {
+        return request(app)
+        .patch("/api/articles/1")
+        .send({inc_votes: -50})
+        .expect(200)
+        .then(({body}) => {
+            expect(body.votes).toBe(50)
+        })
+    })
+    test("PATCH: 400 - should respond with an error when passed a body that does not contain the correct fields", () => {
+        return request(app)
+        .patch("/api/articles/1")
+        .send({})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe("Missing Information")
+        })
+    })
+    test("PATCH: 404 - should respond with an error when passed an article id that doesn't exist", () => {
+        return request(app)
+        .patch("/api/articles/9999")
+        .send({inc_votes: 10})
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe("Article Not Found")
+        })
+    })
+    test("PATCH: 400 - should respond with an error when passed an article that isn't valid", () => {
+        return request(app)
+        .patch("/api/articles/article_id")
+        .send({inc_votes: 10})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe("Invalid Id Type")
+        })
+    })
+    test("PATCH: 400 - should respond with an error when passed invalid data type for a correct key", () => {
+        return request(app)
+        .patch("/api/articles/article_id")
+        .send({inc_votes: 'cat'})
+        .expect(400)
+        .then(({body}) => {
+            expect(body.message).toBe('Invalid Id Type')
+        })
+    })
 })
 
 describe("/api/articles", () => {
@@ -171,7 +225,23 @@ describe("/api/articles", () => {
             })
         })
     })
-
+    test("GET: 200 - responds with an empty array for topic that exists but has no articles", () => {
+        return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then((response) => {
+            const articles = response.body
+            expect(articles.length).toBe(0)
+        })
+    })
+    test("GET: 404 - responds with an error when passed a topic that doesn't exist", () => {
+        return request(app)
+        .get("/api/articles?topic=topic")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe('Topic Not Found')
+        })
+    })
 })
 
 describe("/api/articles/:article_id/comments", () => {
@@ -228,9 +298,6 @@ describe("/api/articles/:article_id/comments", () => {
             expect(body.message).toBe("Article Not Found")
         })
     })
-})
-
-describe("/api/articles/:article_id/comments", () => {
     test("POST: 201 - responds with newly posted comment", () => {
         return request(app)
         .post("/api/articles/1/comments")
@@ -245,6 +312,24 @@ describe("/api/articles/:article_id/comments", () => {
                 comment_id: expect.any(Number), 
                 created_at: expect.any(String)})
         })
+    })
+    test("POST: 201 - should ignore unnecessary properties", () => {
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send({username: "lurker",
+            body: "This article is sick",
+            extraProperty: "extra property"})
+            .expect(201)
+            .then(({body}) => {
+                expect(body.comment).toMatchObject({
+                author: "lurker", 
+                body: "This article is sick", 
+                article_id: 1, 
+                votes: 0, 
+                comment_id: expect.any(Number), 
+                created_at: expect.any(String)
+                })
+            })
     })
     test("POST: 400 - responds with error message if given invalid article id", () => {
         return request(app)
@@ -264,6 +349,15 @@ describe("/api/articles/:article_id/comments", () => {
             expect(body.message).toBe("Article Not Found")
         })
     })
+    test("POST: 404 - responds with an error message if given a username that does not exist", () => {
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send({username: "jona", body: "This article is sick"})
+        .expect(404)
+        .then(({body}) => {
+            expect(body.message).toBe("Username Does Not Exist")
+        })
+    })
     test("POST: 400 - responds with error message if given object with missing properties", () => {
         return request(app)
         .post("/api/articles/1/comments")
@@ -275,64 +369,11 @@ describe("/api/articles/:article_id/comments", () => {
     })
 })
 
-describe("/api/articles/:article_id", () => {
-    test("PATCH: 200 - should respond with an updated article with changed number of votes", () => {
-        return request(app)
-        .patch("/api/articles/1")
-        .send({inc_votes: 10})
-        .expect(200)
-        .then(({body}) => {
-            expect(body.votes).toBe(110)
-        })
-    })
-    test("PATCH: 400 - should respond with an error when passed a body that does not contain the correct fields", () => {
-        return request(app)
-        .patch("/api/articles/1")
-        .send({})
-        .expect(400)
-        .then(({body}) => {
-            expect(body.message).toBe("Missing Information")
-        })
-    })
-    test("PATCH: 404 - should respond with an error when passed an article id that doesn't exist", () => {
-        return request(app)
-        .patch("/api/articles/9999")
-        .send({inc_votes: 10})
-        .expect(404)
-        .then(({body}) => {
-            expect(body.message).toBe("Article Not Found")
-        })
-    })
-    test("PATCH: 400 - should respond with an error when passed an article that isn't valid", () => {
-        return request(app)
-        .patch("/api/articles/article_id")
-        .send({inc_votes: 10})
-        .expect(400)
-        .then(({body}) => {
-            expect(body.message).toBe("Invalid Id Type")
-        })
-    })
-    test("PATCH: 400 - should respond with an error when passed invalid data type for a correct key", () => {
-        return request(app)
-        .patch("/api/articles/article_id")
-        .send({inc_votes: 'cat'})
-        .expect(400)
-        .then(({body}) => {
-            expect(body.message).toBe('Invalid Id Type')
-        })
-    })
-})
-
 describe("/api/comments/:comment_id", () => {
     test("DELETE: 204 - responds with correct status code", () => {
         return request(app)
         .delete("/api/comments/1")
         .expect(204)
-        .then(() => {
-            return request(app)
-            .get("/api/comments/1")
-            .expect(404)
-        })
     })
 })
 

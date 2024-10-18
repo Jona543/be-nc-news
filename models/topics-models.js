@@ -7,4 +7,4 @@ const fetchTopics = () => {
     })
 }
 
-module.exports = fetchTopics
+module.exports = { fetchTopics }
