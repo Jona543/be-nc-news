@@ -12,6 +12,9 @@ const {
 const { deleteComment } = require("./controllers/comments-controllers");
 const { getUsers } = require("./controllers/users-controllers");
 const { psqlErrorHandler, customErrorHandler } = require("./error-handlers");
+const cors = require('cors')
+
+app.use(cors())
 
 app.use(express.json());
 
