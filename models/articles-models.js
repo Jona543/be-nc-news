@@ -25,6 +25,7 @@ const fetchArticles = (userQuery, topics) => {
     "body",
     "created_at",
     "votes",
+    "comment_count",
   ];
   if (topic) {
     const allTopics = [];
@@ -48,7 +49,7 @@ const fetchArticles = (userQuery, topics) => {
     queryString += ` WHERE articles.topic = $1`;
   }
 
-  queryString += ` GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}`;
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
 
   if (order !== "desc" && order !== "asc") {
     return Promise.reject({ status: 404, message: "Invalid Order Query" });
@@ -57,7 +58,9 @@ const fetchArticles = (userQuery, topics) => {
     return Promise.reject({ status: 404, message: "Invalid Input" });
   }
 
-  return db.query(queryString, queryValues).then(({ rows }) => {
+  return db.query(queryString, queryValues).then
+  (({ rows }) => {
+    console.log(rows)
     return rows;
   });
 };
@@ -96,6 +99,7 @@ const insertComment = (article_id, username, body, users) => {
       return rows[0];
     });
 };
+
 const editVotesByArticle = (article_id, body) => {
   return fetchArticleById(article_id).then(() => {
     return db
