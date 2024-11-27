@@ -58,9 +58,7 @@ const fetchArticles = (userQuery, topics) => {
     return Promise.reject({ status: 404, message: "Invalid Input" });
   }
 
-  return db.query(queryString, queryValues).then
-  (({ rows }) => {
-    console.log(rows)
+  return db.query(queryString, queryValues).then(({ rows }) => {
     return rows;
   });
 };
