@@ -1,6 +1,6 @@
 # Northcoders News API
 
-Hosted version: https://northcoders-news-7th3.onrender.com
+Hosted version: https://northcoders-news-7th3.onrender.com/api
 
 This project aims to access application data stored in this repo, and provide this data to front end architecture.
 
