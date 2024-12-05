@@ -39,13 +39,13 @@ const fetchArticles = (userQuery, topics) => {
     }
   }
   let queryValues = [];
-  let queryString = `SELECT articles.*, COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments
+  let queryString = `SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT OUTER JOIN comments
     ON articles.article_id = comments.article_id`;
   if (topic) {
     queryValues.push(topic);
     queryString += ` WHERE articles.topic = $1`;
   }
-  queryString += ` GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}`;
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
   if (order !== "desc" && order !== "asc") {
     return Promise.reject({ status: 404, message: "Invalid Order Query" });
   }
@@ -60,8 +60,10 @@ const fetchCommentsByArticle = (article_id) => {
   return db
     .query(
       `SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id FROM comments
-        WHERE article_id = $1
-        ORDER BY created_at ASC`,
+      JOIN articles
+      ON comments.article_id = articles.article_id
+        WHERE comments.article_id = $1
+        ORDER BY created_at`,
       [article_id]
     )
     .then(({ rows }) => {
