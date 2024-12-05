@@ -8,7 +8,7 @@ When cloning this repo, in order to connect to the required databases please add
 When running this project, create two files called .env.test and .env.development and set environment variables for test and devlopment in each respectively as follows: PGDATABASE=nc_news_test
 PGDATABASE=nc_news
 
-Dependencies required: 
+Dependencies required:
 dotenv: npm i dotenv
 express: npm i express
 jest-sorted: npm i jest-sorted
@@ -21,11 +21,12 @@ pg-format: npm i pg-format
 supertest: npm i supertest
 
 To seed local database: npm run seed
+
 To run tests: npm run test
 
 Minimum version of Node.js required: 6.0.0
 Minimum version of Postgres required: 14.13
 
---- 
+---
 
 This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by [Northcoders](https://northcoders.com/)
